@@ -40,7 +40,7 @@ export default defineNuxtConfig({
     workbox: {
       navigateFallback: "/",
       globPatterns: [],
-      importScripts: ["/sw-sync.js"],
+      importScripts: ["/sw-sync.js", "/sw-notifications.js"],
     },
     client: {
       installPrompt: true,
@@ -48,6 +48,11 @@ export default defineNuxtConfig({
     devOptions: {
       enabled: true,
       suppressWarnings: true,
+    },
+  },
+  vite: {
+    server: {
+      allowedHosts: true,
     },
   },
 });
