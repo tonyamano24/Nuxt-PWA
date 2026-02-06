@@ -64,6 +64,11 @@
                 <i class="fas fa-boxes"></i> Inventory
               </NuxtLink>
             </li>
+            <li class="nav-item">
+              <NuxtLink to="/maps" class="nav-link">
+                <i class="fas fa-map"></i> Maps
+              </NuxtLink>
+            </li>
           </ul>
         </div>
       </div>
