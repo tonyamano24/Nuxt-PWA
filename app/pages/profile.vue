@@ -77,6 +77,7 @@
                         >First Name</label
                       >
                       <input
+                        v-model="formData.firstName"
                         type="text"
                         class="form-control"
                         id="firstName"
@@ -90,6 +91,7 @@
                         class="form-control"
                         id="lastName"
                         value="Doe"
+                        v-model="formData.lastName"
                       />
                     </div>
                     <div class="col-md-6">
@@ -98,7 +100,7 @@
                         type="email"
                         class="form-control"
                         id="email"
-                        value="john.doe@example.com"
+                        v-model="formData.email"
                       />
                     </div>
                     <div class="col-md-6">
@@ -107,12 +109,17 @@
                         type="tel"
                         class="form-control"
                         id="phone"
-                        value="+1 (555) 123-4567"
+                        v-model="formData.phone"
                       />
                     </div>
                     <div class="col-12">
                       <label for="bio" class="form-label">Bio</label>
-                      <textarea class="form-control" id="bio" rows="3">
+                      <textarea
+                        class="form-control"
+                        id="bio"
+                        rows="3"
+                        v-model="formData.bio"
+                      >
 Passionate developer and tech enthusiast.</textarea
                       >
                     </div>
@@ -137,6 +144,7 @@ Passionate developer and tech enthusiast.</textarea
                         type="checkbox"
                         id="notifications"
                         checked
+                        v-model="formData.notifications"
                       />
                       <label class="form-check-label" for="notifications">
                         <i class="fas fa-bell"></i> Email Notifications
@@ -150,6 +158,7 @@ Passionate developer and tech enthusiast.</textarea
                         type="checkbox"
                         id="newsletter"
                         checked
+                        v-model="formData.newsletter"
                       />
                       <label class="form-check-label" for="newsletter">
                         <i class="fas fa-newspaper"></i> Newsletter Subscription
@@ -162,6 +171,7 @@ Passionate developer and tech enthusiast.</textarea
                         class="form-check-input"
                         type="checkbox"
                         id="darkMode"
+                        v-model="formData.darkMode"
                       />
                       <label class="form-check-label" for="darkMode">
                         <i class="fas fa-moon"></i> Dark Mode
@@ -192,6 +202,17 @@ Passionate developer and tech enthusiast.</textarea
 useHead({
   title: "Profile - My PWA",
   meta: [{ name: "description", content: "Manage your user profile" }],
+});
+
+const formData = reactive({
+  firstName: "John",
+  lastName: "Doe",
+  email: "john.doe@example.com",
+  phone: "+1 (555) 123-4567",
+  bio: "Passionate developer and tech enthusiast.",
+  notifications: true,
+  newsletter: true,
+  darkMode: false,
 });
 </script>
 
