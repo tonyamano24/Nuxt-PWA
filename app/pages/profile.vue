@@ -213,9 +213,36 @@ const formData = reactive({
   darkMode: false,
 });
 
-const saveProfile = () => {
+const DB_NAME = "demo-contact-db";
+const TABLE_NAME = "contacts";
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, 1);
+    req.onupgradeneeded = () => {
+      req.result.createObjectStore(TABLE_NAME, { keyPath: "contactId" });
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+const saveProfile = async () => {
   // Simulate saving profile data
   console.log("Saving profile data...", formData);
+
+  const db = await openDB();
+  const tx = db.transaction(TABLE_NAME, "readwrite");
+  tx.objectStore(TABLE_NAME).put({
+    contactId: 1,
+    firstName: formData.firstName,
+    lastName: formData.lastName,
+    email: formData.email,
+    phone: formData.phone,
+    bio: formData.bio,
+    notifications: formData.notifications,
+    newsletter: formData.newsletter,
+    darkMode: formData.darkMode,
+  });
 };
 </script>
 
