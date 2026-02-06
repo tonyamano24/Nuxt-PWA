@@ -59,6 +59,11 @@
                 <i class="fas fa-user"></i> Profile
               </NuxtLink>
             </li>
+            <li class="nav-item">
+              <NuxtLink to="/inventory" class="nav-link">
+                <i class="fas fa-boxes"></i> Inventory
+              </NuxtLink>
+            </li>
           </ul>
         </div>
       </div>
