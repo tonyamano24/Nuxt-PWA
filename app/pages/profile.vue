@@ -77,10 +77,10 @@
                         >First Name</label
                       >
                       <input
-                        v-model="formData.firstName"
                         type="text"
                         class="form-control"
                         id="firstName"
+                        v-model="formData.firstName"
                       />
                     </div>
                     <div class="col-md-6">
@@ -141,7 +141,6 @@ Passionate developer and tech enthusiast.</textarea
                         class="form-check-input"
                         type="checkbox"
                         id="notifications"
-                        checked
                         v-model="formData.notifications"
                       />
                       <label class="form-check-label" for="notifications">
@@ -155,7 +154,6 @@ Passionate developer and tech enthusiast.</textarea
                         class="form-check-input"
                         type="checkbox"
                         id="newsletter"
-                        checked
                         v-model="formData.newsletter"
                       />
                       <label class="form-check-label" for="newsletter">
@@ -179,6 +177,14 @@ Passionate developer and tech enthusiast.</textarea
                 </div>
               </div>
             </div>
+            <!-- Status Message -->
+            <div
+              v-if="statusMessage"
+              :class="['alert', statusMessage.type, 'mb-3']"
+              role="alert"
+            >
+              <i :class="statusMessage.icon"></i> {{ statusMessage.text }}
+            </div>
 
             <!-- Action Buttons -->
             <div class="d-flex gap-3">
@@ -197,53 +203,91 @@ Passionate developer and tech enthusiast.</textarea
 </template>
 
 <script setup>
-useHead({
-  title: "Profile - My PWA",
-  meta: [{ name: "description", content: "Manage your user profile" }],
-});
+const DB_NAME = "pwa_db";
+const DB_VERSION = 1;
+const STORE_NAME = "profile";
+const statusMessage = ref(null);
+
+const openDB = () => {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => resolve(request.result);
+
+    request.onupgradeneeded = (event) => {
+      const db = event.target.result;
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+        db.createObjectStore(STORE_NAME, { keyPath: "id" });
+      }
+    };
+  });
+};
+
+const saveToIndexedDB = async (data) => {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([STORE_NAME], "readwrite");
+    const store = transaction.objectStore(STORE_NAME);
+    const request = store.put({ id: 1, ...data });
+
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+
+    transaction.oncomplete = () => db.close();
+  });
+};
 
 const formData = reactive({
   firstName: "John",
   lastName: "Doe",
   email: "john.doe@example.com",
-  phone: "+1 (555) 123-4567",
-  bio: "Passionate developer and tech enthusiast.",
+  phone: "0123-123123",
+  bio: "test",
   notifications: true,
   newsletter: true,
-  darkMode: false,
+  darkMode: true,
 });
 
-const DB_NAME = "demo-contact-db";
-const TABLE_NAME = "contacts";
-function openDB() {
-  return new Promise((resolve, reject) => {
-    const req = indexedDB.open(DB_NAME, 1);
-    req.onupgradeneeded = () => {
-      req.result.createObjectStore(TABLE_NAME, { keyPath: "contactId" });
-    };
+const saveProfile = async () => {
+  await saveToIndexedDB({ ...formData });
+  showStatus(
+    "Profile saved successfully!",
+    "alert-success",
+    "fas fa-check-circle",
+  );
+};
+
+const showStatus = (text, type, icon) => {
+  statusMessage.value = { text, type, icon };
+  setTimeout(() => {
+    statusMessage.value = null;
+  }, 3000);
+};
+
+useHead({
+  title: "Profile - My PWA",
+  meta: [{ name: "description", content: "Manage your user profile" }],
+});
+
+async function getContactById(contactId) {
+  const db = await openDB();
+  const tx = db.transaction(STORE_NAME, "readonly");
+  const req = tx.objectStore(STORE_NAME).get(contactId);
+  return new Promise((resolve) => {
     req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
   });
 }
 
-const saveProfile = async () => {
-  // Simulate saving profile data
-  console.log("Saving profile data...", formData);
-
-  const db = await openDB();
-  const tx = db.transaction(TABLE_NAME, "readwrite");
-  tx.objectStore(TABLE_NAME).put({
-    contactId: 1,
-    firstName: formData.firstName,
-    lastName: formData.lastName,
-    email: formData.email,
-    phone: formData.phone,
-    bio: formData.bio,
-    notifications: formData.notifications,
-    newsletter: formData.newsletter,
-    darkMode: formData.darkMode,
-  });
-};
+async function loadFormIndexedDB() {
+  const user = await getContactById(1);
+  for (const key in formData) {
+    if (user && user[key] !== undefined) {
+      formData[key] = user[key];
+    }
+  }
+}
+loadFormIndexedDB();
 </script>
 
 <style scoped>
