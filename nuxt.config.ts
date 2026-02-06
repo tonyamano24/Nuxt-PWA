@@ -40,6 +40,7 @@ export default defineNuxtConfig({
     workbox: {
       navigateFallback: "/",
       globPatterns: [],
+      importScripts: ["/sw-sync.js"],
     },
     client: {
       installPrompt: true,
