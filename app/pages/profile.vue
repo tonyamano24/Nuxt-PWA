@@ -81,7 +81,6 @@
                         type="text"
                         class="form-control"
                         id="firstName"
-                        value="John"
                       />
                     </div>
                     <div class="col-md-6">
@@ -90,7 +89,6 @@
                         type="text"
                         class="form-control"
                         id="lastName"
-                        value="Doe"
                         v-model="formData.lastName"
                       />
                     </div>
