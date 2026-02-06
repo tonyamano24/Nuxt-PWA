@@ -74,6 +74,11 @@
                 <i class="fas fa-map-marker-alt"></i> Create Inventory
               </NuxtLink>
             </li>
+            <li class="nav-item">
+              <NuxtLink to="/notifications" class="nav-link">
+                <i class="fas fa-map-marker-alt"></i> Notifications
+              </NuxtLink>
+            </li>
           </ul>
         </div>
       </div>
