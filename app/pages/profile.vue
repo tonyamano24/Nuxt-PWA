@@ -184,7 +184,7 @@ Passionate developer and tech enthusiast.</textarea
 
             <!-- Action Buttons -->
             <div class="d-flex gap-3">
-              <button class="btn btn-success btn-lg">
+              <button class="btn btn-success btn-lg" @click="saveProfile">
                 <i class="fas fa-save"></i> Save Changes
               </button>
               <button class="btn btn-outline-danger btn-lg">
@@ -214,6 +214,11 @@ const formData = reactive({
   newsletter: true,
   darkMode: false,
 });
+
+const saveProfile = () => {
+  // Simulate saving profile data
+  console.log("Saving profile data...", formData);
+};
 </script>
 
 <style scoped>
