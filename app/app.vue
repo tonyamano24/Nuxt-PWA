@@ -69,6 +69,11 @@
                 <i class="fas fa-map"></i> Maps
               </NuxtLink>
             </li>
+            <li class="nav-item">
+              <NuxtLink to="/create-inventory" class="nav-link">
+                <i class="fas fa-map-marker-alt"></i> Create Inventory
+              </NuxtLink>
+            </li>
           </ul>
         </div>
       </div>
