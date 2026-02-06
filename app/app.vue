@@ -1,5 +1,14 @@
 <template>
   <div>
+    <div v-if="showOfflineAlert" class="network-status-overlay">
+      <div
+        class="alert alert-danger d-flex align-items-center justify-content-center m-0"
+        role="alert"
+      >
+        <i class="fas fa-wifi-slash me-2"></i>
+        <strong>You are offline!</strong> Please check your internet connection.
+      </div>
+    </div>
     <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
       <div class="container">
@@ -50,10 +59,30 @@
 </template>
 
 <script setup>
+import { ref, onMounted, onUnmounted } from "vue";
+
+const showOfflineAlert = ref(false);
+
+const handleOffline = () => {
+  showOfflineAlert.value = true;
+};
+
+onMounted(() => {
+  // Set initial state
+  showOfflineAlert.value = !navigator.onLine;
+
+  // Add event listeners
+  window.addEventListener("offline", handleOffline);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("offline", handleOffline);
+});
+
 useHead({
   link: [
     {
-      rel: "stylesheet",
+      rel: "manifest",
       href: "/manifest.webmanifest",
     },
     {
