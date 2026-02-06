@@ -191,7 +191,10 @@ Passionate developer and tech enthusiast.</textarea
               <button class="btn btn-success btn-lg" @click="saveProfile">
                 <i class="fas fa-save"></i> Save Changes
               </button>
-              <button class="btn btn-outline-danger btn-lg">
+              <button
+                class="btn btn-outline-danger btn-lg"
+                @click="deleteIndexedDB"
+              >
                 <i class="fas fa-times"></i> Cancel
               </button>
             </div>
@@ -239,11 +242,11 @@ const saveToIndexedDB = async (data) => {
 };
 
 const formData = reactive({
-  firstName: "John",
-  lastName: "Doe",
-  email: "john.doe@example.com",
-  phone: "0123-123123",
-  bio: "test",
+  firstName: "",
+  lastName: "",
+  email: "",
+  phone: "",
+  bio: "",
   notifications: true,
   newsletter: true,
   darkMode: true,
@@ -288,6 +291,27 @@ async function loadFormIndexedDB() {
   }
 }
 loadFormIndexedDB();
+
+const deleteIndexedDB = async () => {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([STORE_NAME], "readwrite");
+    const store = transaction.objectStore(STORE_NAME);
+    const request = store.delete(1);
+
+    request.onsuccess = () => {
+      showStatus(
+        "Profile data deleted.",
+        "alert-warning",
+        "fas fa-exclamation-triangle",
+      );
+      resolve(request.result);
+    };
+    request.onerror = () => reject(request.error);
+    loadFormIndexedDB();
+    transaction.oncomplete = () => db.close();
+  });
+};
 </script>
 
 <style scoped>
