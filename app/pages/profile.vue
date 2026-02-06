@@ -206,6 +206,7 @@ Passionate developer and tech enthusiast.</textarea
 </template>
 
 <script setup>
+import { ref, reactive, onMounted } from "vue";
 const DB_NAME = "pwa_db";
 const DB_VERSION = 1;
 const STORE_NAME = "profile";
@@ -224,6 +225,33 @@ const openDB = () => {
         db.createObjectStore(STORE_NAME, { keyPath: "id" });
       }
     };
+  });
+};
+
+const deleteIndexedDB = async () => {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([STORE_NAME], "readwrite");
+    const store = transaction.objectStore(STORE_NAME);
+    const request = store.delete(1);
+
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+    transaction.oncomplete = () => db.close();
+  });
+};
+
+const getFromIndexedDB = async () => {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([STORE_NAME], "readonly");
+    const store = transaction.objectStore(STORE_NAME);
+    const request = store.get(1);
+
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+
+    transaction.oncomplete = () => db.close();
   });
 };
 
@@ -268,50 +296,27 @@ const showStatus = (text, type, icon) => {
   }, 3000);
 };
 
+onMounted(async () => {
+  try {
+    const savedProfile = await getFromIndexedDB();
+    if (savedProfile) {
+      formData.firstName = savedProfile.firstName || formData.firstName;
+      formData.lastName = savedProfile.lastName || formData.lastName;
+      formData.email = savedProfile.email || formData.email;
+      formData.phone = savedProfile.phone || formData.phone;
+      formData.bio = savedProfile.bio || formData.bio;
+      formData.notifications =
+        savedProfile.notifications ?? formData.notifications;
+      formData.newsletter = savedProfile.newsletter ?? formData.newsletter;
+      formData.darkMode = savedProfile.darkMode ?? formData.darkMode;
+    }
+  } catch {}
+});
+
 useHead({
   title: "Profile - My PWA",
   meta: [{ name: "description", content: "Manage your user profile" }],
 });
-
-async function getContactById(contactId) {
-  const db = await openDB();
-  const tx = db.transaction(STORE_NAME, "readonly");
-  const req = tx.objectStore(STORE_NAME).get(contactId);
-  return new Promise((resolve) => {
-    req.onsuccess = () => resolve(req.result);
-  });
-}
-
-async function loadFormIndexedDB() {
-  const user = await getContactById(1);
-  for (const key in formData) {
-    if (user && user[key] !== undefined) {
-      formData[key] = user[key];
-    }
-  }
-}
-loadFormIndexedDB();
-
-const deleteIndexedDB = async () => {
-  const db = await openDB();
-  return new Promise((resolve, reject) => {
-    const transaction = db.transaction([STORE_NAME], "readwrite");
-    const store = transaction.objectStore(STORE_NAME);
-    const request = store.delete(1);
-
-    request.onsuccess = () => {
-      showStatus(
-        "Profile data deleted.",
-        "alert-warning",
-        "fas fa-exclamation-triangle",
-      );
-      resolve(request.result);
-    };
-    request.onerror = () => reject(request.error);
-    loadFormIndexedDB();
-    transaction.oncomplete = () => db.close();
-  });
-};
 </script>
 
 <style scoped>
